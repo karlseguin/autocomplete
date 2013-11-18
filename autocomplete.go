@@ -60,10 +60,12 @@ func (root *Root) Find(value string) []string {
 
 // Insert the id=>value into the tree
 func (root *Root) Insert(id string, value string) {
-  root.process(id, value, root.insert)
   root.Lock()
+  oldValue, exists := root.lookup[id]
   root.lookup[id] = value
   root.Unlock()
+  if exists { root.process(id, oldValue, root.remove) }
+  root.process(id, value, root.insert)
 }
 
 // Removes the id for the given title

@@ -36,6 +36,8 @@ You interact with the trie via the `Insert`, `Find` and `Remove` methods:
     
     //100 is the maximum title size we should worry about
     ac := autocomplete.New(100)
+    
+    //insert will update the value when the id has already been seen
     for id, title := range titles {
       ac.Insert(id, title)
     }
@@ -43,5 +45,5 @@ You interact with the trie via the `Insert`, `Find` and `Remove` methods:
     ids := ac.Find("ki")
     //ids == ["1776", "2021"] (order might be different)
     
-    // remove sadly requires both the id and the title
+    //remove the item by id
     ac.Remove("2802")

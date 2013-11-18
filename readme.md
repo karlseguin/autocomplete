@@ -44,4 +44,4 @@ You interact with the trie via the `Insert`, `Find` and `Remove` methods:
     //ids == ["1776", "2021"] (order might be different)
     
     // remove sadly requires both the id and the title
-    ac.Remove("2802", "Yatzy")
+    ac.Remove("2802")

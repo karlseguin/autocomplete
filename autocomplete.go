@@ -76,6 +76,8 @@ func (root *Root) Remove(id string) {
 }
 
 func (root *Root) insert(id string, value []byte) {
+  root.Lock()
+  defer root.Unlock()
   node := root.head
   for _, b := range value {
     sub, exists := node.prefix[b]
@@ -89,6 +91,8 @@ func (root *Root) insert(id string, value []byte) {
 }
 
 func (root *Root) remove(id string, value []byte) {
+  root.Lock()
+  defer root.Unlock()
   node := root.head
   for _, b := range value {
     sub, exists := node.prefix[b]
@@ -106,8 +110,6 @@ func (root *Root) process(id string, value string, processor processor) {
   parts := bytes.Split(full, []byte{32})
   partials := make([][]byte, len(parts))
 
-  root.Lock()
-  defer root.Unlock()
   for i := 0; i < len(parts); i++ {
     partial := bytes.Join(parts[i:], []byte{})
     for _, seen := range partials {

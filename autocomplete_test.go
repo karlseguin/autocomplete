@@ -98,6 +98,22 @@ func BenchmarkFinds(b *testing.B) {
   }
 }
 
+func BenchmarkDeletes(b *testing.B) {
+  ac := new()
+  l := int32(len(testData))
+  ids := make([]string, 0, l)
+  for id, title := range testData {
+    ac.Insert(id, title)
+    ids = append(ids, id)
+  }
+  b.ResetTimer()
+  for i := 0; i < b.N; i++ {
+    id := ids[rand.Int31n(l)]
+    ac.Remove(id)
+    ac.Insert(id, testData[id])
+  }
+}
+
 func new() *Root {
   return New(100)
 }

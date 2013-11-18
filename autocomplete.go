@@ -15,6 +15,7 @@ type Root struct {
   head *Level
   sync.RWMutex
   maxLength int
+  lookup map[string]string
 }
 
 // A node within the trie
@@ -30,6 +31,7 @@ func New(maxLength int) *Root {
     head: newLevel(),
     maxLength: maxLength,
     pool: newPool(1024, maxLength),
+    lookup: make(map[string]string),
   }
 }
 
@@ -59,10 +61,17 @@ func (root *Root) Find(value string) []string {
 // Insert the id=>value into the tree
 func (root *Root) Insert(id string, value string) {
   root.process(id, value, root.insert)
+  root.Lock()
+  root.lookup[id] = value
+  root.Unlock()
 }
 
 // Removes the id for the given title
-func (root *Root) Remove(id string, value string) {
+func (root *Root) Remove(id string) {
+  root.Lock()
+  value, exists := root.lookup[id]
+  root.Unlock()
+  if exists == false { return }
   root.process(id, value, root.remove)
 }
 

@@ -64,7 +64,7 @@ func TestDeltesANIndex(t *testing.T) {
   ac := new()
   ac.Insert("9", "i like cats")
   ac.Insert("a", "i like cows")
-  ac.Remove("9", "i like cats")
+  ac.Remove("9")
   assert(t, ac, "like", "a", "i like c", "a", "like ca", "", "likeco", "a")
 }
 

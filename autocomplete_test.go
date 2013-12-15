@@ -52,7 +52,14 @@ func TestFindsMultipleMatches(t *testing.T) {
 	ac := new()
 	ac.Insert(6, "i like cats")
 	ac.Insert(7, "i like cows")
-	assert(t, ac, "like", "6,7", "i like c", "6,7", "like ca", 6, "likeco", 7)
+	assert(t, ac, "like", "6,7", "i like c", "7,6", "like ca", 6, "likeco", 7)
+}
+
+func TestResultsMatchingStartShowFirst(t *testing.T) {
+	ac := new()
+	ac.Insert(6, "i like cats")
+	ac.Insert(7, "cats are cute like")
+	assert(t, ac, "like", "6,7", "cat", "7,6")
 }
 
 func TestDoesNotIndexDuplicates(t *testing.T) {
@@ -143,7 +150,7 @@ func assert(t *testing.T, ac *Root, data ...interface{}) {
 		}
 		for i := 0; i < len(actual); i++ {
 			if actual[i] != expected[i] {
-				t.Errorf("expected id at %d when searching for %q to be %q, got %q instead", i, search, expected[i], actual[i])
+				t.Errorf("expected id at %d when searching for %q to be %d, got %d instead", i, search, expected[i], actual[i])
 			}
 		}
 	}

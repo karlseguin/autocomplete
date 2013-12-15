@@ -11,7 +11,7 @@ const NULL uint = 18446744073709551615
 
 var empty = []uint{}
 
-type processor func(id uint, value []byte)
+type processor func(id uint, value []byte, front bool)
 
 // The root of the trie
 type Root struct {
@@ -42,7 +42,7 @@ func New(maxLength int) *Root {
 // Create a new inner level
 func newLevel() *Level {
 	return &Level{
-		ids:    make([]uint, 0, 1),
+		ids:    make([]uint, 0),
 		prefix: make(map[byte]*Level),
 	}
 }
@@ -87,7 +87,7 @@ func (root *Root) Remove(id uint) {
 	root.process(id, value, root.remove)
 }
 
-func (root *Root) insert(id uint, value []byte) {
+func (root *Root) insert(id uint, value []byte, front bool) {
 	root.Lock()
 	defer root.Unlock()
 	node := root.head
@@ -97,12 +97,21 @@ func (root *Root) insert(id uint, value []byte) {
 			sub = newLevel()
 			node.prefix[b] = sub
 		}
-		sub.ids = append(sub.ids, id)
+		ids := make([]uint, len(sub.ids)+1)
+		if front {
+			ids[0] = id
+			copy(ids[1:], sub.ids)
+
+		} else {
+			copy(ids, sub.ids)
+			ids[len(sub.ids)] = id
+		}
+		sub.ids = ids
 		node = node.prefix[b]
 	}
 }
 
-func (root *Root) remove(id uint, value []byte) {
+func (root *Root) remove(id uint, value []byte, front bool) {
 	root.Lock()
 	defer root.Unlock()
 	node := root.head
@@ -131,7 +140,7 @@ func (root *Root) process(id uint, value string, processor processor) {
 				goto next
 			}
 		}
-		processor(id, partial)
+		processor(id, partial, i == 0)
 		partials = append(partials, partial)
 	next:
 	}

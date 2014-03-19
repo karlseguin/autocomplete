@@ -64,7 +64,7 @@ func TestResultsMatchingStartShowFirst(t *testing.T) {
 
 func TestDoesNotIndexDuplicates(t *testing.T) {
 	ac := new()
-	ac.Insert(8, "i like cats i like")
+	ac.Insert(8, "i like cats i like i")
 	assert(t, ac, "cat", 8, "i like", 8)
 }
 

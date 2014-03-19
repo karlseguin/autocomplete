@@ -26,6 +26,7 @@ type Root struct {
 type Level struct {
 	ids    []uint
 	prefix map[byte]*Level
+	set    map[uint]struct{}
 }
 
 // Creates a new trie, specifying the maximum length of input
@@ -43,6 +44,7 @@ func New(maxLength int) *Root {
 func newLevel() *Level {
 	return &Level{
 		ids:    make([]uint, 0),
+		set: make(map[uint]struct{}),
 		prefix: make(map[byte]*Level),
 	}
 }
@@ -97,16 +99,19 @@ func (root *Root) insert(id uint, value []byte, front bool) {
 			sub = newLevel()
 			node.prefix[b] = sub
 		}
-		ids := make([]uint, len(sub.ids)+1)
-		if front {
-			ids[0] = id
-			copy(ids[1:], sub.ids)
+		if _, exists := sub.set[id]; exists == false {
+			ids := make([]uint, len(sub.ids)+1)
+			if front {
+				ids[0] = id
+				copy(ids[1:], sub.ids)
 
-		} else {
-			copy(ids, sub.ids)
-			ids[len(sub.ids)] = id
+			} else {
+				copy(ids, sub.ids)
+				ids[len(sub.ids)] = id
+			}
+			sub.ids = ids
+			sub.set[id] = struct{}{}
 		}
-		sub.ids = ids
 		node = node.prefix[b]
 	}
 }
@@ -131,7 +136,7 @@ func (root *Root) process(id uint, value string, processor processor) {
 	full := valueBuffer.Bytes()
 
 	parts := bytes.Split(full, []byte{32})
-	partials := make([][]byte, len(parts))
+	partials := make([][]byte, 0, len(parts))
 
 	for i := 0; i < len(parts); i++ {
 		partial := bytes.Join(parts[i:], []byte{})

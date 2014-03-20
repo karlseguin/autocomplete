@@ -44,7 +44,7 @@ func New(maxLength int) *Root {
 func newLevel() *Level {
 	return &Level{
 		ids:    make([]uint, 0),
-		set: make(map[uint]struct{}),
+		set:    make(map[uint]struct{}),
 		prefix: make(map[byte]*Level),
 	}
 }
@@ -125,7 +125,8 @@ func (root *Root) remove(id uint, value []byte, front bool) {
 		if exists == false {
 			return
 		}
-		sub.ids = delete(sub.ids, id)
+		sub.ids = removeFromArray(sub.ids, id)
+		delete(sub.set, id)
 		node = node.prefix[b]
 	}
 }
@@ -169,7 +170,7 @@ func (root *Root) normalize(value string, preserveSpaces bool) *Buffer {
 }
 
 // Removes an item from a slice.
-func delete(array []uint, target uint) []uint {
+func removeFromArray(array []uint, target uint) []uint {
 	for index, value := range array {
 		if value != target {
 			continue

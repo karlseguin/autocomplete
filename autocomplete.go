@@ -35,7 +35,7 @@ func New(maxLength int) *Root {
 	return &Root{
 		head:      newLevel(),
 		maxLength: maxLength,
-		pool:      newPool(1024, maxLength),
+		pool:      newPool(128, maxLength),
 		lookup:    make(map[uint]string),
 	}
 }
@@ -65,6 +65,7 @@ func (root *Root) Find(value string) []uint {
 	}
 	return node.ids
 }
+
 
 // Insert the id=>value into the tree
 func (root *Root) Insert(id uint, value string) {

@@ -31,13 +31,16 @@ type Level struct {
 
 // Creates a new trie, specifying the maximum length of input
 // we must handle
-func New(maxLength int) *Root {
-	return &Root{
+func New(maxLength int, readonly bool) *Root {
+	root := &Root{
 		head:      newLevel(),
 		maxLength: maxLength,
 		pool:      newPool(128, maxLength),
-		lookup:    make(map[uint]string),
 	}
+	if readonly == false {
+		root.lookup = make(map[uint]string)
+	}
+	return root
 }
 
 // Create a new inner level
@@ -66,15 +69,16 @@ func (root *Root) Find(value string) []uint {
 	return node.ids
 }
 
-
 // Insert the id=>value into the tree
 func (root *Root) Insert(id uint, value string) {
-	root.Lock()
-	oldValue, exists := root.lookup[id]
-	root.lookup[id] = value
-	root.Unlock()
-	if exists {
-		root.process(id, oldValue, root.remove)
+	if root.lookup != nil {
+		root.Lock()
+		oldValue, exists := root.lookup[id]
+		root.lookup[id] = value
+		root.Unlock()
+		if exists {
+			root.process(id, oldValue, root.remove)
+		}
 	}
 	root.process(id, value, root.insert)
 }

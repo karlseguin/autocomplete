@@ -123,7 +123,7 @@ func BenchmarkDeletes(b *testing.B) {
 }
 
 func new() *Root {
-	return New(100)
+	return New(100, false)
 }
 
 func assert(t *testing.T, ac *Root, data ...interface{}) {
